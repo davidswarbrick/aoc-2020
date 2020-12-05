@@ -43,12 +43,50 @@ impl Passport {
     }
     fn validate(&self) -> bool {
         let mut valid = false;
-        valid = self.byr >= 1920;
-        valid &= self.byr <= 2002;
-        valid &= self.iyr >= 2010;
-        valid &= self.iyr <= 2020;
-        valid &= self.eyr >= 2020;
-        valid &= self.eyr <= 2030;
+        // Check int values for byr, iyr, eyr
+        valid = self.byr >= 1920 && self.byr <= 2002;
+        valid &= self.iyr >= 2010 && self.iyr <= 2020;
+        valid &= self.eyr >= 2020 && self.eyr <= 2030;
+        valid &= match self.ecl.as_str() {
+            "amb" => true,
+            "blu" => true,
+            "brn" => true,
+            "gry" => true,
+            "grn" => true,
+            "hzl" => true,
+            "oth" => true,
+            _ => false
+        };
+
+        // pid
+        valid &= self.pid.chars().collect::<Vec<char>>().len() == 9;
+        valid &= self.pid.parse::<i64>().is_ok() ;
+
+        // hcl
+        valid &= self.hcl.chars().collect::<Vec<char>>().len() == 7;
+        let mut it = self.hcl.chars();
+        valid &= it.next().unwrap() == '#';
+        for c in it {
+            valid &= c.is_numeric() || match c {
+                'a' => true,
+                'b' => true,
+                'c' => true,
+                'd' => true,
+                'e' => true,
+                'f' => true,
+                _ => false 
+            };
+        }
+        // hgt
+        valid &= self.hgt.ends_with("cm")||self.hgt.ends_with("in");
+        if self.hgt.ends_with("cm") {
+            let num = self.hgt.replace("cm","").parse::<i64>().unwrap();
+            valid &= num >=150 && num <=193;
+        }
+        if self.hgt.ends_with("in") {
+            let num = self.hgt.replace("in","").parse::<i64>().unwrap();
+            valid &= num >=59 && num <=76;
+        }
         valid
     }
 }
