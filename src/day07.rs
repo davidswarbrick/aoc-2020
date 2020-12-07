@@ -37,15 +37,15 @@ fn rule_maker(s: &str) -> BagRule {
 }
 
 fn find_outer_bag_colours(bag_colour: &str, rules: &Vec<BagRule>) -> Vec<String> {
-    let mut allowed_outer_colours = Vec::new(); 
+    let mut allowed_outer_colours = Vec::new();
     let mut bag_col = String::from(bag_colour);
     let mut it = 0;
     loop {
-        println!("Looking for {}",bag_col);
+        println!("Looking for {}", bag_col);
         for rule in rules {
             for (other_colour, _num) in &rule.contains {
-                if other_colour == &bag_col&& !allowed_outer_colours.contains(&rule.colour) {
-                    println!("- {}",&rule.colour);
+                if other_colour == &bag_col && !allowed_outer_colours.contains(&rule.colour) {
+                    println!("- {}", &rule.colour);
                     allowed_outer_colours.push(String::from(&rule.colour));
                 }
             }
@@ -53,36 +53,37 @@ fn find_outer_bag_colours(bag_colour: &str, rules: &Vec<BagRule>) -> Vec<String>
         bag_col = match allowed_outer_colours.get(it) {
             Some(x) => String::from(x.as_str()),
             None => break,
-        }; 
-        it +=1;
+        };
+        it += 1;
     }
     allowed_outer_colours
 }
 
-fn get_rule<'a>(r: &'a str, rules: &'a Vec<BagRule>)->Option<&'a BagRule> {
+fn get_rule<'a>(r: &'a str, rules: &'a Vec<BagRule>) -> Option<&'a BagRule> {
     let rule_id = rules.binary_search_by_key(&r, |a| &a.colour);
-    if rule_id.is_ok(){
-        return rules.get(rule_id.unwrap())
+    if rule_id.is_ok() {
+        return rules.get(rule_id.unwrap());
     } else {
-        return None
+        return None;
     }
-
 }
 
-
-fn recurse_down(colour: &str, number : i32, rules: &Vec<BagRule>, mut explored: Vec<(String, i32)>) -> Vec<(String, i32)>{
-    let rule = match get_rule(&colour, rules){
+fn recurse_down(
+    colour: &str,
+    number: i32,
+    rules: &Vec<BagRule>,
+    mut explored: Vec<(String, i32)>,
+) -> Vec<(String, i32)> {
+    let rule = match get_rule(&colour, rules) {
         Some(r) => r,
-        None => return explored// found bottom - this contains none
+        None => return explored, // found bottom - this contains none
     };
     for (inner_bag, num) in &rule.contains {
-        explored  =  recurse_down(&inner_bag, number * num, rules, explored);
-        explored.push((inner_bag.to_string(), number * num)); 
+        explored = recurse_down(&inner_bag, number * num, rules, explored);
+        explored.push((inner_bag.to_string(), number * num));
     }
     explored
-
 }
-
 
 pub fn run() {
     let rule_strings = input_from_file();
@@ -97,7 +98,7 @@ pub fn run() {
     let cols = recurse_down("shiny gold", 1, &rules, explored);
     let mut total = 0;
     for c in cols {
-        println!("{} * {}",c.0,c.1);
+        println!("{} * {}", c.0, c.1);
         total += c.1;
     }
     println!("{}", total);
