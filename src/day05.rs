@@ -34,7 +34,7 @@ pub fn run() {
             max_id = seat_id;
         }
     }
-    // Not the neatest way around it, but this does a quick and dirty job of 
+    // Not the neatest way around it, but this does a quick and dirty job of
     // checking if a seat is in the found boarding IDs or not.
     // Minimum seat was 35, max was 885, so we know it's in row 4-110
     // There must be a nicer way using the fact that the ID is [row][col] (in binary)

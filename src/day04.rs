@@ -55,37 +55,38 @@ impl Passport {
             "grn" => true,
             "hzl" => true,
             "oth" => true,
-            _ => false
+            _ => false,
         };
 
         // pid
         valid &= self.pid.chars().collect::<Vec<char>>().len() == 9;
-        valid &= self.pid.parse::<i64>().is_ok() ;
+        valid &= self.pid.parse::<i64>().is_ok();
 
         // hcl
         valid &= self.hcl.chars().collect::<Vec<char>>().len() == 7;
         let mut it = self.hcl.chars();
         valid &= it.next().unwrap() == '#';
         for c in it {
-            valid &= c.is_numeric() || match c {
-                'a' => true,
-                'b' => true,
-                'c' => true,
-                'd' => true,
-                'e' => true,
-                'f' => true,
-                _ => false 
-            };
+            valid &= c.is_numeric()
+                || match c {
+                    'a' => true,
+                    'b' => true,
+                    'c' => true,
+                    'd' => true,
+                    'e' => true,
+                    'f' => true,
+                    _ => false,
+                };
         }
         // hgt
-        valid &= self.hgt.ends_with("cm")||self.hgt.ends_with("in");
+        valid &= self.hgt.ends_with("cm") || self.hgt.ends_with("in");
         if self.hgt.ends_with("cm") {
-            let num = self.hgt.replace("cm","").parse::<i64>().unwrap();
-            valid &= num >=150 && num <=193;
+            let num = self.hgt.replace("cm", "").parse::<i64>().unwrap();
+            valid &= num >= 150 && num <= 193;
         }
         if self.hgt.ends_with("in") {
-            let num = self.hgt.replace("in","").parse::<i64>().unwrap();
-            valid &= num >=59 && num <=76;
+            let num = self.hgt.replace("in", "").parse::<i64>().unwrap();
+            valid &= num >= 59 && num <= 76;
         }
         valid
     }

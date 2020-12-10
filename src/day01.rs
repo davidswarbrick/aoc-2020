@@ -2,12 +2,11 @@ use std::fs;
 
 fn input_from_file() -> Vec<i32> {
     let filename = "./inputs/day01.txt";
-    let contents = fs::read_to_string(filename)
-        .expect("No input.txt present");
-    contents.lines()
+    let contents = fs::read_to_string(filename).expect("No input.txt present");
+    contents
+        .lines()
         .map(|x| x.parse::<i32>().unwrap())
         .collect()
-
 }
 
 pub fn run() {
