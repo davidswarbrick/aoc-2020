@@ -75,9 +75,9 @@ fn jolt_differences(adaptors: &[i64]) -> Vec<i64> {
 }
 
 fn count_contiguous_ones(v: &[i64]) -> Vec<i64> {
-    // returns num contig 3s, then num of 1s between threes
+    // returns num contig 3s, then occurences of n number of threes, index = n
     let mut one_count = 0;
-    let mut num_ones = vec![0, 0, 0, 0, 0, 0, 0, 0];
+    let mut num_ones = vec![0, 0, 0, 0, 0];
     for i in 0..v.len() {
         if v[i] != 1 {
             num_ones[one_count as usize] += 1;
@@ -86,6 +86,7 @@ fn count_contiguous_ones(v: &[i64]) -> Vec<i64> {
             one_count += 1;
         }
     }
+    num_ones[one_count as usize] += 1;
     num_ones
 }
 
