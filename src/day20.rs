@@ -19,7 +19,7 @@ impl Tile {
             flip_y: false,
             rotation: 0,
             matching_ids: [0, 0, 0, 0],
-            dims: (0, 0),
+            dims: (10, 10),
         }
     }
     fn set_dims(&mut self) -> (usize, usize) {
@@ -41,10 +41,10 @@ impl Tile {
         );
         //println!("{}", self.img);
     }
-    fn get_column(&mut self, mut n: usize) -> Option<String> {
+    fn get_column(&self, mut n: usize) -> Option<String> {
         let mut s = String::new();
         if self.flip_x {
-            let (row_len, _) = self.get_dims();
+            let (row_len, _) = self.dims;
             n = row_len - (n + 1);
         }
         let it: Vec<&str> = match self.flip_y {
@@ -61,9 +61,9 @@ impl Tile {
         }
         Some(s)
     }
-    fn get_row(&mut self, mut n: usize) -> Option<String> {
+    fn get_row(&self, mut n: usize) -> Option<String> {
         if self.flip_y {
-            let (_, col_height) = self.get_dims();
+            let (_, col_height) = self.dims;
             n = col_height - (n + 1);
         }
         // ToDo: Reverse strings if needed
@@ -76,8 +76,8 @@ impl Tile {
             true => Some(row_string.chars().rev().collect::<String>()),
         }
     }
-    fn get_edges(&mut self) -> [String; 4] {
-        let (x, y) = self.get_dims();
+    fn get_edges(&self) -> [String; 4] {
+        let (x, y) = self.dims;
         let mut edges: [String; 4] = Default::default();
         edges[(self.rotation) % 4] = self.get_row(0).unwrap();
         edges[(self.rotation + 1) % 4] = self.get_column(x - 1).unwrap();
@@ -86,6 +86,26 @@ impl Tile {
         edges
     }
 }
+
+
+
+fn find_matches(tiles: &HashMap<i32,Tile>, edge: &str) -> Vec<(i32,usize)> {
+   let mut matches = Vec::new();
+   for t in tiles.values() {
+        let ed = t.get_edges();
+        for i in 0..=3 {
+            // check if edge matches e or e in reverse
+            let e = &ed[i];
+            if edge == e || edge == e.chars().rev().collect::<String>()  {
+                matches.push((t.id,i));
+            }
+        }
+   } 
+   matches
+}
+
+
+
 
 fn update_tile_map(mut tiles: HashMap<i32, Tile>, tile_id: &i32) -> HashMap<i32, Tile> {
     let mut new_tile = tiles.remove(tile_id).unwrap();
@@ -217,11 +237,31 @@ fn input_from_file() -> (HashMap<i32, Tile>, Vec<i32>) {
 
 pub fn run() {
     let (mut tiles, tile_ids) = input_from_file();
-    println!("Map valid : {}", map_valid(&tiles));
-    //let id: i32 = 1579;
+    //println!("Map valid : {}", map_valid(&tiles));
+    ////let id: i32 = 1579;
+    //for id in tile_ids {
+    //    tiles = update_tile_map(tiles, &id);
+    //    tiles[&id].print();
+    //}
+    //println!("Map valid : {}", map_valid(&tiles));
+    let mut edges : HashMap<i32,i32> = HashMap::new();
     for id in tile_ids {
-        tiles = update_tile_map(tiles, &id);
-        tiles[&id].print();
+        let ed = &tiles[&id].get_edges();
+        for i in 0..=3 {
+            // check if edge matches e or e in reverse
+            let e = &ed[i];
+            let matches = find_matches(&tiles,e);
+            if matches.len() == 1 {
+                *edges.entry(id).or_insert(0) += 1; 
+            }
+        }
     }
-    println!("Map valid : {}", map_valid(&tiles));
+    let mut total: i64 = 1;
+    for (id, matches) in edges {
+        if matches == 2 {
+            println!("{}",id);
+            total *= id as i64;
+        } 
+    }
+    println!("{}",total);
 }
