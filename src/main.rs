@@ -1,7 +1,7 @@
 //#[macro_use]
 //extern crate lazy_static; // For initialising Regex only once
-mod day22;
+mod day23;
 
 fn main() {
-    day22::run();
+    day23::run();
 }
